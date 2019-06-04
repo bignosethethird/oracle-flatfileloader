@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>abc</title>
+<link rel="stylesheet" href="abc.css" type="text/css" />
+<link rev="made" href="mailto:vcradmin@maninvestments.com" />
+</head>
+
+<body>
+
+<p><a name="__index__"></a></p>
+<!-- INDEX BEGIN -->
+
+<ul>
+
+	<li><a href="#name">NAME</a></li>
+	<li><a href="#modes_of_operation">MODES OF OPERATION</a></li>
+	<ul>
+
+		<li><a href="#automatic_mode">Automatic Mode</a></li>
+		<li><a href="#adhoc_mode">Ad-hoc Mode</a></li>
+		<li><a href="#error_recovery">Error recovery</a></li>
+	</ul>
+
+	<li><a href="#synopsis">SYNOPSIS</a></li>
+	<li><a href="#options">OPTIONS</a></li>
+	<ul>
+
+		<li><a href="#mandatory">Mandatory</a></li>
+		<li><a href="#optional">Optional</a></li>
+	</ul>
+
+	<li><a href="#system_configuration">SYSTEM CONFIGURATION</a></li>
+	<li><a href="#error_codes">ERROR CODES</a></li>
+</ul>
+<!-- INDEX END -->
+
+<hr />
+<p>
+</p>
+<h1><a name="name">NAME</a></h1>
+<p>Feed2Oracle - Creates a data feed file and loads it into an Oracle staging table</p>
+<p>For a given source file Id and file basis (e.g. 'bob' and 'tplus1') and an as-of-date,
+(in the format YYYYMMDD) a preset number of files are polled for in the
+<code>$APP_HOME/data</code> data directory. Each data file is processed on a one-by-one basis
+as soon as the file is seen in the data directotry. This scripts waits for a
+predefined time until all the required files have arrive.</p>
+<p>Files that have not arrived after the wait time has expired cause the script
+to exit with an error. The script will need to be manually called later again
+when the remaining files are known to have arrived.</p>
+<p>Files are moved from the <code>$APP_HOME/data</code> data directory to the
+<code>$APP_HOME/archive</code> archive directory after they have been successfully
+loaded into the Oracle database.</p>
+<p>This script connects to the Oracle database as set in the current $ORACLE_SID
+environment variable as and OPS$-user (i.e. if you are running as shell user
+VCR it will connect as Oracle user OPS$VCR). All packages that this script calls
+need to grant execution rights to the relevant Oracle user.</p>
+<p>All file type details are stored in the VCR database. Refer to the VCR
+documentation for more information about configuring file types, source types
+and file basis.</p>
+<p>
+<a href="#__index__"><small>Top</small></a>
+</p>
+<hr />
+<h1><a name="modes_of_operation">MODES OF OPERATION</a></h1>
+<p>The script runs in one of two modes:</p>
+<p>
+</p>
+<h2><a name="automatic_mode">Automatic Mode</a></h2>
+<p>This is the default operation. The script polls for a set of files that match the given
+input parameters. Further details of the file name are retrieved from the database,
+including the number of files that are expected.</p>
+<p>Only once all the files have been found is the loading process is registered on the databass.
+The staging area is cleared and the files are loaded and archived one by one and the script exits.</p>
+<p>The file name convention that the script polls files for is:</p>
+<pre>
+    description.vsp.asof.yyyymmdd.gen.yyyymmdd.basis.sss.vvv.dat</pre>
+<p>where:</p>
+<dl>
+<dt><strong><a name="item_description"><strong>description</strong></a></strong><br />
+</dt>
+<dd>
+Business-based descriptive name of the data content, e.g. dailypnl
+</dd>
+<p></p>
+<dt><strong><a name="item_vsp"><strong>vsp</strong></a></strong><br />
+</dt>
+<dd>
+The Valuation Service Provider identifier that the file originates from.
+This identifier is previously agreed.
+</dd>
+<p></p>
+<dt><strong><a name="item_asof_2eyyyymmdd"><strong>asof.yyyymmdd</strong></a></strong><br />
+</dt>
+<dd>
+The 'as of' date (closing date or period end date) that
+the valuations are for.
+</dd>
+<p></p>
+<dt><strong><a name="item_gen_2eyyyymmdd"><strong>gen.yyyymmdd</strong></a></strong><br />
+</dt>
+<dd>
+The date that the file was generated. This date is normally
+later than the 'as of' date.
+</dd>
+<p></p>
+<dt><strong><a name="item_basis"><strong>basis</strong></a></strong><br />
+</dt>
+<dd>
+The basis on which the file was created. Examples: 'tplus1 if the
+file is one delivered to MI as soon as possible after the as-of date (usually
+two days after the as of date - trade date plus one extract day to reconcile
+the account) or tclean if this file is delivered at the end of month as a final
+version for an official end of month valuation. Other possible values, but not
+limited to, are daily, hourly, monthly, annually.
+</dd>
+<p></p>
+<dt><strong><a name="item_sss"><strong>sss</strong></a></strong><br />
+</dt>
+<dd>
+A zero-padded three digit sequence number allocated to each individual file
+in the set of files sent for a VSP, as-of date and basis. The numbers start
+at 001 and a set of files is contiguously numbered. The intention is that
+the sequence number provides a unique file name, and allows operational staff
+to determine which file in a set is missing.
+</dd>
+<dd>
+<p>Is is possible to specify something other than a string a digits.</p>
+</dd>
+<p></p>
+<dt><strong><a name="item_vvv"><strong>vvv</strong></a></strong><br />
+</dt>
+<dd>
+A three digit version number. If multiple versions of a file
+have to be produced to resolve exceptions then this number will reflect that
+version. For the first file or set of files sent for a given VSP, as-of date
+and basis, this would be 001.
+</dd>
+<dd>
+<p>This value must be 001 for the default operation of this script. If it is anything else,
+then the script will perform an ad-hoc file load (see <a href="#adhoc_mode">Ad-hoc Mode</a> below).</p>
+</dd>
+<p></p></dl>
+<p>Only once the required number of files have been found,
+the loading process is registered, the staging area is cleared
+and the files are loaded and archived one by one.</p>
+<p>The script polls for the required set of files for a predefined period only.
+This period is configured in the utl.config table on the VCR database.
+If this process times out because the required number of files are not
+present on the input directory, this scripts exits with an error.</p>
+<p>Note:
+The script does not start processing files until the full set of required
+files for the data load has presented itself.</p>
+<p>
+</p>
+<h2><a name="adhoc_mode">Ad-hoc Mode</a></h2>
+<p>The script runs in the ad-hoc file load mode when either the <strong>-f</strong> file name
+or the <strong>-v</strong> version number greater than 001 has been specified on the
+command line.</p>
+<p>When the file name is specified, any file name is acceptable.
+When the version number is specified, the standard file naming convention is assumed.
+Note that the mandatory parameters still need to be specified, as they provide data context.</p>
+<p>The usual number of files that are required for automatic operation are
+ignored and only the files that are present in the <code>$APP_HOME/data</code>
+directory that match the file criteria at the time that the script is run are
+loaded into the database. Also, unlike the automatic operation, the script
+does not wait for the arrival of any files. If no files have been processed,
+the script exits with an exit code.</p>
+<p>If one or more files are found, the loading process is registered on the
+database, the staging area is cleared, the files are loaded and archived one
+by one onto the target database.</p>
+<p>There is no restriction on the maximum number of files duing an ad-hoc load.
+However, if no files are found at all, the script exits with an error code.</p>
+<p>
+</p>
+<h2><a name="error_recovery">Error recovery</a></h2>
+<p>Should this scipt fail for any reason, it will terminate immediately with an
+exit code (See <a href="#error_codes">Error Codes</a> below).</p>
+<p>
+<a href="#__index__"><small>Top</small></a>
+</p>
+<hr />
+<h1><a name="synopsis">SYNOPSIS</a></h1>
+<dl>
+<dt><strong><a name="item_feed2oracle__2ds_bob__2da_20040817__2db_tplus1"><code>Feed2Oracle -s bob -a 20040817 -b tplus1</code></a></strong><br />
+</dt>
+<dd>
+Most common format. Loads all files similarly named to this:
+</dd>
+<dd>
+<pre>
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.001.001.dat
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.002.001.dat
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.003.001.dat
+    etc., until the required set is done or timed out.</pre>
+</dd>
+<p></p>
+<dt><strong><a name="item_feed2oracle__2ds_bob__2da_20040817__2db_tplus1__2d"><code>Feed2Oracle -s bob -a 20040817 -b tplus1 -v 002</code></a></strong><br />
+</dt>
+<dd>
+Ad-hoc load of files with specified version number:
+</dd>
+<dd>
+<pre>
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.001.002.dat
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.002.002.dat
+    dailypnl.bob.asof.20040817.gen.20040820.tplus1.003.002.dat
+    etc., until no further files are left.</pre>
+</dd>
+<p></p>
+<dt><strong><code>Feed2Oracle -s bob -a 20040817 -b tplus1 -f emergencyfix.dat</code></strong><br />
+</dt>
+<dd>
+Ad-hoc load of single file <code>emergencyfix.dat</code> for the specified criteria.
+</dd>
+<p></p>
+<dt><strong><a name="item_feed2oracle__2ds_gfs__2da_20040817__2db_tplus1__2d"><code>Feed2Oracle -s gfs -a 20040817 -b tplus1 -f a*.dat -sf gfsmgs</code></a></strong><br />
+</dt>
+<dd>
+Ad-hoc load of all the files that match the file criteria <code>a*.dat</code> that
+should be mapped to the source provider 'gfs' and the has a source file type
+known on the target database as 'gfsmgs'
+</dd>
+<p></p>
+<dt><strong><a name="item_feed2oracle__2d_2dhelp"><code>Feed2Oracle --help</code></a></strong><br />
+</dt>
+<dd>
+Display this text.
+</dd>
+<p></p>
+<dt><strong><a name="item_feed2oracle__2d_2dman"><code>Feed2Oracle --man</code></a></strong><br />
+</dt>
+<dd>
+Detailed description in 'man' page format.
+</dd>
+<p></p></dl>
+<p>
+<a href="#__index__"><small>Top</small></a>
+</p>
+<hr />
+<h1><a name="options">OPTIONS</a></h1>
+<p><strong>Feed2Oracle</strong> [<strong>-p</strong> db_passwd] <strong>-s</strong> source_name <strong>-a</strong> as_of_date <strong>-b</strong> data_basis</p>
+<pre>
+  or</pre>
+<p><strong>Feed2Oracle</strong> [<strong>-p</strong> db_passwd] <strong>-s</strong> source_name <strong>-a</strong> as_of_date <strong>-b</strong> data_basis <strong>-v</strong> version</p>
+<pre>
+  or</pre>
+<p><strong>Feed2Oracle</strong> [<strong>-p</strong> db_passwd] <strong>-s</strong> source_name <strong>-a</strong> as_of_date <strong>-b</strong> data_basis <strong>-f</strong> file_name <strong>-sf</strong> source_file_type</p>
+<p>
+</p>
+<h2><a name="mandatory">Mandatory</a></h2>
+<dl>
+<dt><strong><a name="item__2ds_7c_2d_2dsource_file_name_source_file_name"><strong>-s|--source_file_name Source File Name</strong></a></strong><br />
+</dt>
+<dd>
+The Source Name as defined in the table vcr.source
+</dd>
+<p></p>
+<dt><strong><a name="item__2da_7c_2d_2das_of_date_file_27s_as_of_date"><strong>-a|--as_of_date File's As of Date</strong></a></strong><br />
+</dt>
+<dd>
+Japanese format YYYYMMDD of the As Of Date in the file name
+</dd>
+<p></p>
+<dt><strong><a name="item__2db_7c_2d_2ddata_basis_feed_file_data_basis"><strong>-b|--data_basis Feed file Data Basis</strong></a></strong><br />
+</dt>
+<dd>
+Feed file's Basis of the data, e.g. tplus, tclean, daily, monthly, etc..
+</dd>
+<p></p></dl>
+<p>
+</p>
+<h2><a name="optional">Optional</a></h2>
+<dl>
+<dt><strong><a name="item__2dv_7c_2d_2dversion_version_number_2c_format__5b0"><strong>-v|--version Version Number, format [0-9][0-9][0-9] with leading 0's</strong></a></strong><br />
+</dt>
+<dd>
+The version number of the file. If not specified, it defaults to '001'.
+</dd>
+<dd>
+<p>When a version is specified, the script assumes that this is an
+ad-hoc file load (see <a href="#adhoc_mode">Ad-hoc Mode</a> above).</p>
+</dd>
+<p></p>
+<dt><strong><a name="item__2df_7c_2d_2dfile_name_file_name"><strong>-f|--file_name File name</strong></a></strong><br />
+</dt>
+<dd>
+Exact file criteria to load. Use this option when doing an ad-hoc file load
+(see <a href="#adhoc_mode">Ad-hoc Mode</a> above).
+</dd>
+<p></p>
+<dt><strong><a name="item__2dsf_7c_2d_2dsource_file_type_source_file_type"><strong>-sf|--source_file_type Source File Type</strong></a></strong><br />
+</dt>
+<dd>
+This option needs to be specified when an explicit file name (-f) is specified
+that does not comply to the agreed file convention, which means that pertinent
+details about the data cannot be extracted from the name.
+It specifies the type of file organisation that is to be expected against
+the given source name.
+</dd>
+<p></p>
+<dt><strong><a name="item__2d_3f_7c_2d_2dhelp"><strong>-?|--help</strong></a></strong><br />
+</dt>
+<dd>
+Displays simple help
+</dd>
+<p></p>
+<dt><strong><a name="item__2dm_7c_2d_2dman"><strong>-m|--man</strong></a></strong><br />
+</dt>
+<dd>
+Displays this in a man-page format.
+</dd>
+<p></p>
+<dt><strong><a name="item__2d_2dverbose"><strong>--verbose</strong></a></strong><br />
+</dt>
+<dd>
+Prints running details to STDOUT in green.
+</dd>
+<p></p>
+<dt><strong><a name="item__2dn_7c_2d_2dnotify"><strong>-n|--notify</strong></a></strong><br />
+</dt>
+<dd>
+Sends notification messages to the Remedy email system. This disabled by default.
+</dd>
+<p></p>
+<dt><strong><a name="item__2dd_7c_2d_2ddebug"><strong>-d|--debug</strong></a></strong><br />
+</dt>
+<dd>
+Prints very verbose running details to STDOUT in yellow.
+</dd>
+<p></p>
+<dt><strong><a name="item__2dr_7c_2d_2drelease"><strong>-r|--release</strong></a></strong><br />
+</dt>
+<dd>
+Prints the source control header to STDOUT.
+</dd>
+<p></p></dl>
+<p>
+<a href="#__index__"><small>Top</small></a>
+</p>
+<hr />
+<h1><a name="system_configuration">SYSTEM CONFIGURATION</a></h1>
+<p>The following global parameters are defined in the VCR database's configuration
+table, utl.config.</p>
+<dl>
+<dt><strong><a name="item_sqlldrdata"><strong>SQLLDRData</strong></a></strong><br />
+</dt>
+<dd>
+Relative Directory off $APP_HOME that SQLLDR will load files from. Default: data. No leading or trailing slashes!
+</dd>
+<p></p>
+<dt><strong><a name="item_sqlldrarchive"><strong>SQLLDRArchive</strong></a></strong><br />
+</dt>
+<dd>
+Relative Directory off $APP_HOME that processed files will be moved to after loading. Default: archive
+</dd>
+<p></p>
+<dt><strong><a name="item_sqlldrlog"><strong>SQLLDRLog</strong></a></strong><br />
+</dt>
+<dd>
+Relative directory off $APP_HOME that log files are written to. Default: log
+</dd>
+<p></p>
+<dt><strong><a name="item_sqlldrcontrol"><strong>SQLLDRControl</strong></a></strong><br />
+</dt>
+<dd>
+Relative directory off $APP_HOME that control files are written to. Default: tmp
+</dd>
+<p></p>
+<dt><strong><a name="item_sqlldrmaxerrors"><strong>SQLLDRMaxErrors</strong></a></strong><br />
+</dt>
+<dd>
+Maximum number of faulty records tolerated by SQLLDR. Default: 0
+</dd>
+<p></p>
+<dt><strong><a name="item_sqlldrmaxwaittime"><strong>SQLLDRMaxWaitTime</strong></a></strong><br />
+</dt>
+<dd>
+Maximum wait time in MINUTES for a complete set of files to be processed; Default: 5 minutes
+</dd>
+<p></p></dl>
+<p>
+<a href="#__index__"><small>Top</small></a>
+</p>
+<hr />
+<h1><a name="error_codes">ERROR CODES</a></h1>
+<p>This script returns the following error codes:</p>
+<p><strong>0</strong> Successful execution.</p>
+<p><strong>209</strong> The script timed out waiting for files.</p>
+<p>Feed2Oracle waits for a configurable number of minutes for all the
+required data files to arrive before starting the file loading operation.
+At least one files has not arrived.</p>
+<p><strong>210</strong> An invalid date was encountered</p>
+<p>The format of dates in the data files are configured for
+each source file tyle. An unexpected date format was encountered.</p>
+<p><strong>220</strong> No files were processed.</p>
+<p>A specific file name or a specific file version (other than 001) was
+specified as a parameter. Feed2Oracle failed to find any file that
+matches this criteria.</p>
+<p><strong>221</strong> An object that script needs to operate on is locked by another process</p>
+<p>Another process is currently operating on the data source. It could be that
+a previous attempt failed halfway through, in which case a manual intervention
+is required to remove the lock.</p>
+<p><strong>222</strong> An invalid parameter or combination of parameters was supplied to the script</p>
+<p>Refer to this man page for parameters for Feed2Oracle.</p>
+<p><strong>223</strong> Error in the runtime environment</p>
+<p>Crucial environment variables such as APP_HOME or ORACLE_SID are not defined.</p>
+<p><strong>224</strong> Error in the data format of the object that the script operates on</p>
+<p>No columns found in the file header of the given data file. Check if the column
+delimiter or the preamble length correctly specified?</p>
+<p><strong>225</strong> A subprocess that the script calls caused an error</p>
+<p>Feed2Oracle calls a number of Oracle processes and one of these processes
+caused an error. These processes generate their own errors, so you should
+be able to determine the cause of this error by looking at the preceeding
+errors in the log.</p>
+<p>You may now safely destroy your computer and dispose of it in an environmentally-friendly way.</p>
+<p><a href="#__index__"><small>Top</small></a></p>
+
+</body>
+
+</html>

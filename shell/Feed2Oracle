@@ -1,0 +1,18 @@
+#!/bin/bash
+# It is important to fully qualify all the paths since other users
+# who run this script may not have the environment variables
+# correctly  set up.
+[[ -z $APP_HOME ]] && printf "\$APP_HOME has not been set.\nExiting...\n" && exit 1
+[[ -z $ORACLE_SID ]] && printf "\$ORACLE_SID has not been set.\nExiting...\n" && exit 1
+
+# Set up Perl environment, since we are not running Perl from the system's standard environment.
+export LD_LIBRARY_PATH=$APP_HOME/lib:LD_LIBRARY_PATH
+export PERL5LIB=$APP_HOME/lib/5.8.6
+export PATH=$APP_HOME/bin:$PATH
+ulimit -n 1024
+
+PERL=$APP_HOME/bin/perl
+[[ ! -x $PERL ]] && printf "This environment needs its own Perl installation in $APP_HOME.\nExiting...\n" && exit 1
+
+$PERL $APP_HOME/bin/Feed2Oracle.pl $@
+
