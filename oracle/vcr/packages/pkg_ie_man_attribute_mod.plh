@@ -1,0 +1,27 @@
+CREATE OR REPLACE PACKAGE 
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_ie_man_attribute_mod.plh 1.1 2005/09/27 13:12:12BST apenney DEV  $
+  --------------------------------------------------------------------------
+  -- Allows you to update investment engine mandatory attributes
+ vcr.pkg_ie_man_attribute_mod
+ AS
+ 
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_ie_man_attribute_mod';
+   
+  procedure delete_detail(
+    p_ie_id                     in investment_engine.ie_id%type,                
+    p_table_name                in ie_target_column.table_name%type, 
+    p_column_name               in ie_target_column.column_name%type,     
+    p_change_reason             in ie_target_column.change_reason%type        
+  );
+
+  procedure insert_detail(
+    p_ie_id                     in investment_engine.ie_id%type,                
+    p_table_name                in ie_target_column.table_name%type, 
+    p_column_name               in ie_target_column.column_name%type,     
+    p_change_reason             in ie_target_column.change_reason%type        
+  );
+
+end pkg_ie_man_attribute_mod;
+/

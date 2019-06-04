@@ -1,0 +1,189 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_source_load_run AS
+  ------------------------------------------------------------------------
+  --
+  --  $Header: vcr/packages/pkg_source_load_run.plh 1.12.1.2.1.3 2005/09/27 13:15:45BST apenney DEV  $
+  --
+  ------------------------------------------------------------------------
+  -- Provides routines to obtain information on source load runs 
+  -- READ ONLY 
+  ------------------------------------------------------------------------
+
+  gc_run_status_error       CONSTANT CHAR(3) := 'ERR';
+  gc_run_status_complete    CONSTANT CHAR(3) := 'COM';
+  gc_run_status_waiting     CONSTANT CHAR(3) := 'WAI';
+  gc_run_status_in_progress CONSTANT CHAR(3) := 'INP';
+
+  gc_log_message_parent_table CONSTANT VARCHAR2(100) := 'source_load_run';
+
+  -- get the as of date of the last load run for the same source and basis
+  -- return null if there is no previous run
+  FUNCTION get_last_as_of_date(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN DATE;
+  
+  -- get the id of the previous load run to this one if it exists (otherwise return NULL)
+  -- for the current runs as of date, source and basis
+  FUNCTION get_last_load_run(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN NUMBER;
+  
+  -- return the id of the latest run for the specified parameters
+  -- if as of date is null get the latest run for the current as of date
+  FUNCTION get_load_run(p_source_name IN source.source_name%TYPE,
+                        p_basis       IN source_basis.basis%TYPE,
+                        p_as_of_date  IN DATE) RETURN NUMBER;
+
+  -- checks if there are runs for this source in progress other than the parameter run
+  FUNCTION is_source_loading(p_load_run_id IN source_load_run.load_run_id%TYPE)
+    RETURN BOOLEAN;
+
+  -- checks if there are runs for this source in progress before starting a new one
+  FUNCTION is_source_loading(p_source_name IN source.source_name%TYPE)
+    RETURN BOOLEAN;
+
+  -- gets a description of the load run id for logging purposes
+  FUNCTION get_description(p_load_run_id IN source_load_run.load_run_id%TYPE)
+    RETURN VARCHAR2;
+
+  -- gets a summary of the load run for notification purposes  
+  FUNCTION get_summary(p_load_run_id IN source_load_run.load_run_id%TYPE)
+    RETURN VARCHAR2;
+
+  -- for p_basis and p_as_of_date formats and sends a notification to all investment engine staff
+  -- summarising the status of the latest loads for all sources
+  PROCEDURE send_status_update(p_basis      IN source_basis.basis%TYPE,
+                               p_as_of_date IN source_load_run.as_of_date%TYPE);
+                               
+  -- for p_source, p_basis, p_from_date and p_to_date check that data was processed
+  -- for all weekdays between and including the from and to date
+  -- notify admin team of status of latest job for each as of date
+  PROCEDURE check_period_complete(p_source_name IN source.source_name%TYPE,
+                                  p_basis       IN source_basis.basis%TYPE,
+                                  p_from_date   IN date,
+                                  p_to_date     IN date);
+
+  -- get a count of load runs
+  FUNCTION get_dropdown_count RETURN INTEGER;
+  
+  -- get a result set of load runs 
+  -- returns a result set
+  --     source_load_run.load_run_id            unique id of run
+  --     load_run_description   description of run to be displayed in dropdown list
+  FUNCTION get_dropdown_list RETURN utl.global.t_result_set;
+
+  -- get a count of load runs for a source, as of date and basis
+  FUNCTION get_filter_dropdown_count (p_source_id   IN source.source_id%TYPE,
+                                      p_basis       IN source_basis.basis%TYPE,
+                                      p_as_of_date  IN DATE)RETURN INTEGER;
+  
+  -- get a result set of load runs for a source, as of date and basis
+  -- returns a result set
+  --     source_load_run.load_run_id            unique id of run
+  --     load_run_description   description of run to be displayed in dropdown list
+  FUNCTION get_filter_dropdown_list  (p_source_id   IN source.source_id%TYPE,
+                                      p_basis       IN source_basis.basis%TYPE,
+                                      p_as_of_date  IN DATE) RETURN utl.global.t_result_set;
+                             
+  -- get a count load runs for the parameters
+  --     p_source_id optional source
+  --     p_as_of_date optional as of date
+  --     p_basis optional basis
+  --     p_status optional status
+  --     p_latest - either 'N' or 'Y'. If Y get the latest runs only for the selected parameters  
+  --     p_part_release_only -- if 'Y' gets only load runs which have not been fully released
+  FUNCTION get_run_count(p_source_id IN source_load_run.source_id%TYPE,
+                        p_as_of_date IN source_load_run.as_of_date%TYPE,
+                        p_basis      IN source_load_run.basis%TYPE,
+                        p_status     IN source_load_run.status%TYPE, 
+                        p_latest     IN VARCHAR2 DEFAULT 'N',
+                        p_part_release_only IN VARCHAR2 DEFAULT 'N'
+                        ) RETURN INTEGER;
+                             
+  -- get a result set of load runs for the parameters
+  -- used in source load list screen
+  
+  FUNCTION get_run_list(p_source_id  IN source_load_run.source_id%TYPE,
+                        p_as_of_date IN source_load_run.as_of_date%TYPE,
+                        p_basis      IN source_load_run.basis%TYPE,
+                        p_status     IN source_load_run.status%TYPE, 
+                        p_latest     IN VARCHAR2 DEFAULT 'N',
+                        p_part_release_only IN VARCHAR2 DEFAULT 'N'
+                        ) RETURN utl.global.t_result_set;
+               
+  -- get a count of loaded files for the parameter
+  --     p_load_run_id -- the parent load run, mandatory
+  -- used in source load file list screen      
+  
+  FUNCTION get_file_count(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN INTEGER;
+   
+  -- get a result set of loaded files for the parameter
+  --     p_load_run_id -- the parent load run
+  -- returns a result set
+  --     source_load_run_file.file_id "Id"
+  --     source_load_run_file.pathname "Pathname"
+  --     source_load_run_file.filename "Filename"
+  --     source_load_run_file.no_of_records "Records"
+  --     source_load_run_file.reporting_date "Reporting Date"         
+  --     file_type.description "Type"
+  -- used in source load file list screen      
+  
+  FUNCTION get_file_list(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN utl.global.t_result_set;
+                     
+  -- gets a count of load run statii 
+  FUNCTION get_status_dropdown_count RETURN INTEGER;
+  
+  -- gets a list of load run statii 
+  FUNCTION get_status_dropdown_list RETURN utl.global.t_result_set;
+  
+  -- gets a count of load run as of dates 
+  FUNCTION get_as_of_date_dropdown_count RETURN INTEGER;
+  
+  -- gets a list of load run as of dates 
+  FUNCTION get_as_of_date_dropdown_list RETURN utl.global.t_result_set;
+  
+  -- gets a count of load run basii 
+  FUNCTION get_basis_dropdown_count RETURN INTEGER;
+  
+  -- gets a list of load run basii 
+  FUNCTION get_basis_dropdown_list RETURN utl.global.t_result_set;
+  
+  -- get a count of log entries, optionally for
+  --     p_load_run_id -- the run the log entries are for
+  --     p_from_date   -- between two dates
+  --     p_to_date
+ 
+  FUNCTION get_log_count(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                         p_from_date   IN DATE,
+                         p_to_date     IN DATE) RETURN INTEGER;
+  
+  -- get a result set of log entries, optionally for
+  --     p_load_run_id -- the run the log entries are for
+  --     p_from_date   -- between two dates
+  --     p_to_date
+  -- returns a result set
+  --     utl.log_message.message_text "Message"
+  --     utl.log_message.message_type "Type"
+  --     utl.log_message.program_name "Program"
+  --     utl.log_message.error_code "Error Code"
+  --     utl.log_message.log_date   "Date/Time"
+  --     utl.error_codes.message
+  --     utl.error_codes.explanation
+  --     load run description
+  --     utl.log_message.log_user
+  -- ordered by sequence_id descending
+  FUNCTION get_log_list(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                        p_from_date   IN DATE,
+                        p_to_date     IN DATE) RETURN utl.global.t_result_set;
+                        
+  -- get release status for for a load run and ie
+  FUNCTION get_ie_release_status(p_load_run_id IN source_fund_release.load_run_id%TYPE,
+                                 p_ie_id       IN investment_engine.ie_id%TYPE) RETURN VARCHAR2;                        
+  -- get list of funds in this load run for an investment engine and their release information
+  FUNCTION get_fund_release_list(p_load_run_id IN source_fund_release.load_run_id%TYPE,
+                                 p_ie_id       IN investment_engine.ie_id%TYPE) RETURN utl.global.t_result_set;
+
+  -- get count of funds in this load run for an investment engine
+  FUNCTION get_fund_release_count(p_load_run_id IN source_fund_release.load_run_id%TYPE,
+                                  p_ie_id       IN investment_engine.ie_id%TYPE) RETURN INTEGER;
+                  
+  -- send notification of files in data directory
+  PROCEDURE send_data_file_list;
+                        
+END pkg_source_load_run;
+/

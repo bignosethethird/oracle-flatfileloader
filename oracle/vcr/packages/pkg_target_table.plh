@@ -1,0 +1,24 @@
+create or replace package vcr.pkg_target_table
+-- $Header: vcr/packages/pkg_target_table.plh 1.2 2005/09/27 13:15:56BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_man_override';
+
+  -- GUI Interface   
+
+  -- Table Dropdown lists  
+  function get_dropdown_list
+  return utl.global.t_result_set;
+  
+  function get_dropdown_count
+  return pls_integer;  
+
+  -- Column Dropdown lists  
+  function get_col_dropdown_list(p_table_name IN target_table.table_name%TYPE)
+  return utl.global.t_result_set;
+  
+  function get_col_dropdown_count(p_table_name IN target_table.table_name%TYPE)
+  return pls_integer;  
+    
+end pkg_target_table;
+/

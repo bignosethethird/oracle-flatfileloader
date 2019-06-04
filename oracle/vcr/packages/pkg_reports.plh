@@ -1,0 +1,18 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_reports AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_reports.plh 1.5 2005/08/24 08:50:29BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to generate requests to Crystal to run reports
+  ------------------------------------------------------------------------
+   
+  gc_param_directory            CONSTANT VARCHAR2(100) := 'VCRREPORTPARAMS';
+  gc_crystal_output_url_cfg_key CONSTANT VARCHAR2(50) := 'vcr.crystal.outputurl';
+  gc_crystal_vc_path_cfg_key    CONSTANT VARCHAR2(50) := 'vcr.crystal.visualcutpath';
+  
+  -- generate a request to run the std exception report for a load run 
+  -- generally called when completing a load run
+  -- if an existing outstanding request is detected an error is logged but no exception is raised
+  PROCEDURE request_std_exception(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+END pkg_reports;
+/

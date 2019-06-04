@@ -1,0 +1,14 @@
+create or replace package vcr.pkg_source_broker_mod
+-- $Header: vcr/packages/pkg_source_broker_mod.plh 1.1.1.2 2005/09/27 15:17:26BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_broker_mod';
+
+  procedure update_detail(
+    p_source_broker_id in source_broker.source_broker_id%type,  
+    p_prime_broker_id  in prime_broker.prime_broker_id%type,
+    p_change_reason    in prime_broker.change_reason%type
+  );
+    
+end pkg_source_broker_mod;
+/

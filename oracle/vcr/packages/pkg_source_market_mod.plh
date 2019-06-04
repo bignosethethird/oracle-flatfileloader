@@ -1,0 +1,17 @@
+create or replace package vcr.pkg_source_market_mod
+-- $Header: vcr/packages/pkg_source_market_mod.plh 1.1 2005/09/16 13:47:56BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_market_mod';
+
+  -- GUI Interface   
+  -- updates source market details
+  procedure update_detail(
+   p_market_name   in source_market.market_name%type,  
+   p_source_id     in source_market.source_id%type,
+   p_exchange_code in source_market.exchange_code%type,
+   p_change_reason in source_market.change_reason%type
+  );
+    
+end pkg_source_market_mod;
+/

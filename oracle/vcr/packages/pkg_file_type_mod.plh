@@ -1,0 +1,41 @@
+create or replace package vcr.pkg_file_type_mod
+-- $Header: vcr/packages/pkg_file_type_mod.plh 1.1 2005/07/29 16:56:35BST ghoekstra DEV  $
+as
+
+  pc_package                      constant varchar2(30):='vcr';
+  pc_schema                       constant varchar2(30):='pkg_file_type_mod';
+
+  procedure update_detail(
+    p_file_type                in file_type.file_type%type,
+    p_table_name               in file_type.table_name%type,             
+    p_delimiter                in file_type.delimiter%type,             
+    p_ignore_records           in file_type.ignore_records%type,
+    p_accounting_period_field  in file_type.accounting_period_field%type,
+    p_description              in file_type.description%type,            
+    p_document_name            in file_type.document_name%type,          
+    p_date_format              in file_type.date_format%type,            
+    p_end_of_line              in file_type.end_of_line%type,            
+    p_string_encloser          in file_type.string_encloser%type,        
+    p_check_type               in file_type.check_type%type,             
+    p_preserve_unmapped        in file_type.preserve_unmapped%type,      
+    p_change_reason            in file_type.change_reason%type            
+  );
+  
+  procedure insert_detail(
+    p_file_type                in file_type.file_type%type,
+    p_table_name               in file_type.table_name%type,             
+    p_delimiter                in file_type.delimiter%type,             
+    p_ignore_records           in file_type.ignore_records%type,
+    p_accounting_period_field  in file_type.accounting_period_field%type,
+    p_description              in file_type.description%type,            
+    p_document_name            in file_type.document_name%type,          
+    p_date_format              in file_type.date_format%type,            
+    p_end_of_line              in file_type.end_of_line%type,            
+    p_string_encloser          in file_type.string_encloser%type,        
+    p_check_type               in file_type.check_type%type,             
+    p_preserve_unmapped        in file_type.preserve_unmapped%type,      
+    p_change_reason            in file_type.change_reason%type            
+  );
+  
+end pkg_file_type_mod;      
+/

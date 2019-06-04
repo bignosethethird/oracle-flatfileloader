@@ -1,0 +1,50 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_housekeeping AS
+  ---------------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_housekeeping.plh 1.4.1.4 2005/10/21 17:14:19BST apenney DEV  $
+  ---------------------------------------------------------------------------------
+  --  A package to manage partitions, set rollback segments etc
+  ---------------------------------------------------------------------------------
+  
+  ---------------------------------------------------------------------------------
+  -- Gets the subpartition that any data for the parameter set would be inserted in
+  ---------------------------------------------------------------------------------
+  FUNCTION get_source_subpartition(p_as_of_date IN DATE,
+                                   p_source_id  IN source.source_id%TYPE,
+                                   p_table_name IN file_type.table_name%TYPE)
+    RETURN VARCHAR2;
+    
+  -- maintain date range partitions for the current p_as_of_date and p_table_name
+  PROCEDURE maintain_date_partitions(p_as_of_date      IN DATE,
+                                     p_table_name      IN file_type.table_name%TYPE,
+                                     p_months_retained IN INTEGER DEFAULT NULL);
+                                     
+  -- compares the partitions on the staging area table versus the list of sources 
+  -- if a new source is found a partition is created
+  -- if a partition exists but there is no source that partition is dropped
+  PROCEDURE maintain_staging_area;
+  
+  -- sets the roll back segment for a transaction for particular load run 
+  -- e.g. loading source_position
+  PROCEDURE start_transaction(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+  -- gathers statistics on the subpartition that contains the data loaded by p_load_run_id
+  PROCEDURE gather_run_target_stats(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                                    p_percent     IN INTEGER);
+  
+  -- gathers statistics on the non-partitioned tables
+  PROCEDURE gather_table_stats;
+  
+  -- gather statistics on a subpartition of composite partitioned table
+  -- (range partitioned by as of date, sub list parititioned by source id)
+  PROCEDURE gather_run_table_stats(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                                   p_table_name  IN VARCHAR2,
+                                   p_percent     IN INTEGER);
+                                   
+  ---------------------------------------------------------------------------------
+  -- Gets the date partition that any data for the parameter set would be inserted in
+  ---------------------------------------------------------------------------------
+
+  FUNCTION get_date_partition(p_as_of_date IN DATE,
+                              p_table_name IN file_type.table_name%TYPE) RETURN VARCHAR2;                                   
+END pkg_housekeeping;
+/

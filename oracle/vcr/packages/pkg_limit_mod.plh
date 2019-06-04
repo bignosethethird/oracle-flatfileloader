@@ -1,0 +1,30 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_limit_mod AS
+-------------------------------------------------------------------------------------
+-- $Header: vcr/packages/pkg_limit_mod.plh 1.2 2005/10/20 13:57:52BST apenney DEV  $
+-------------------------------------------------------------------------------------
+-- Allows you to update limit info
+  
+  PROCEDURE update_limit(p_limit_id      IN limit.limit_id%TYPE,
+                         p_start_date    IN limit_version.start_date%TYPE,
+                         p_rpvalues      IN VARCHAR2,
+                         p_change_reason IN limit_version.change_reason%TYPE);
+                         
+ -- close an existing limit
+  PROCEDURE close_limit(p_limit_id IN limit.limit_id%TYPE,
+                        p_end_date IN limit_version.start_date%TYPE,
+                        p_change_reason IN limit_version.change_reason%TYPE);
+
+  -- add a limit
+  PROCEDURE add_limit(p_measure_rule_id IN VARCHAR2,
+                      p_start_date    IN limit_version.start_date%TYPE,
+                      p_hvalues       IN VARCHAR2,
+                      p_rpvalues      IN VARCHAR2,
+                      p_change_reason IN limit_version.change_reason%TYPE);       
+                      
+  -- loads a new limit based on a textual set of header values
+  FUNCTION load_limit(p_measure_rule_id IN VARCHAR2,
+                      p_start_date    IN limit_version.start_date%TYPE,
+                      p_hvalues       IN VARCHAR2,
+                      p_rpvalues      IN VARCHAR2) RETURN VARCHAR2;                                   
+END pkg_limit_mod;
+/

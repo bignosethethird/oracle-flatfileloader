@@ -1,0 +1,40 @@
+create or replace package vcr.pkg_investment_engine_mod
+-- $Header: vcr/packages/pkg_investment_engine_mod.plh 1.2 2005/08/08 17:21:42BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_investment_engine_mod';
+
+  /*
+  procedure delete_detail(
+    p_ie_id                     in investment_engine.ie_id%type,                
+    --p_description               in investment_engine.description%type,          
+    --p_me_source                 in investment_engine.me_source%type,            
+    --p_email_address             in investment_engine.email_address%type,        
+    --p_ignore_zero_positions     in investment_engine.ignore_zero_positions%type,
+    --p_ror_calc_denominator      in investment_engine.ror_calc_denominator%type, 
+    p_change_reason             in investment_engine.change_reason%type        
+  );
+  */
+
+  procedure insert_detail(
+    p_ie_id                     in investment_engine.ie_id%type,                
+    p_description               in investment_engine.description%type,          
+    p_me_source                 in investment_engine.me_source%type,            
+    p_email_address             in investment_engine.email_address%type,        
+    p_ignore_zero_positions     in investment_engine.ignore_zero_positions%type,
+    p_ror_calc_denominator      in investment_engine.ror_calc_denominator%type, 
+    p_change_reason             in investment_engine.change_reason%type        
+  );
+
+  procedure update_detail(
+    p_ie_id                     in investment_engine.ie_id%type,                
+    p_description               in investment_engine.description%type,          
+    p_me_source                 in investment_engine.me_source%type,            
+    p_email_address             in investment_engine.email_address%type,        
+    p_ignore_zero_positions     in investment_engine.ignore_zero_positions%type,
+    p_ror_calc_denominator      in investment_engine.ror_calc_denominator%type, 
+    p_change_reason             in investment_engine.change_reason%type        
+  );
+    
+end pkg_investment_engine_mod;
+/

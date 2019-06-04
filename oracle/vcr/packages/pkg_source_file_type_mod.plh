@@ -1,0 +1,32 @@
+create or replace package vcr.pkg_source_file_type_mod
+-- $Header: vcr/packages/pkg_source_file_type_mod.plh 1.1 2005/07/29 16:56:41BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_file_type_mod';
+
+  procedure delete_detail(
+    p_source_file_type         in source_file_type.source_file_type%type,
+    --p_source_id                in source_file_type.source_id%type,
+    --p_file_type                in source_file_type.file_type%type, 
+    --p_no_of_files              in source_file_type.no_of_files%type, 
+    p_change_reason            in source_file_type.change_reason%type
+  );
+
+  procedure insert_detail(
+    p_source_file_type         in source_file_type.source_file_type%type,
+    p_source_id                in source_file_type.source_id%type,
+    p_file_type                in source_file_type.file_type%type, 
+    p_no_of_files              in source_file_type.no_of_files%type, 
+    p_change_reason            in source_file_type.change_reason%type
+  );
+
+  procedure update_detail(
+    p_source_file_type         in source_file_type.source_file_type%type,
+    p_source_id                in source_file_type.source_id%type,
+    p_file_type                in source_file_type.file_type%type, 
+    p_no_of_files              in source_file_type.no_of_files%type, 
+    p_change_reason            in source_file_type.change_reason%type
+  );
+    
+end pkg_source_file_type_mod;
+/

@@ -1,0 +1,32 @@
+create or replace package vcr.pkg_ie_platform_mod
+-- $Header: vcr/packages/pkg_ie_platform_mod.plh 1.1 2005/07/29 16:56:36BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_ie_platform_mod';
+
+  /*
+  procedure delete_detail(
+    p_ie_id               in ie_platform.ie_id%type,        
+    p_ie_platform         in ie_platform.ie_platform%type,  
+    p_change_reason       in ie_platform.change_reason%type
+  );
+  */
+
+  procedure insert_detail(
+    p_ie_id               in ie_platform.ie_id%type,        
+    p_ie_platform         in ie_platform.ie_platform%type,  
+    p_email_address       in ie_platform.email_address%type,
+    p_description         in ie_platform.description%type,
+    p_change_reason       in ie_platform.change_reason%type
+  );
+
+  procedure update_detail(
+    p_ie_id               in ie_platform.ie_id%type,        
+    p_ie_platform         in ie_platform.ie_platform%type,  
+    p_email_address       in ie_platform.email_address%type,
+    p_description         in ie_platform.description%type,
+    p_change_reason       in ie_platform.change_reason%type
+  );
+    
+end pkg_ie_platform_mod;
+/

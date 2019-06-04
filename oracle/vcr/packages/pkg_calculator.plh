@@ -1,0 +1,39 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_calculator AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_calculator.plh 1.2 2005/07/21 14:21:13BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to perform calculations specific to a target table
+  -- e.g. calculate mtd ror for funds based on P&L position data
+  ------------------------------------------------------------------------
+  
+  -- calculates the ror for a fund or strategy using the notional
+  -- for a particular as of date
+  --                  as of date that last ror calculation was for
+  --                  notional 
+  --                  last notional
+  --                  mtd pnl
+  --                  daily pnl
+  --                  the RoR value for the last as of date
+  --                  the RoR value before the notional last changed
+  --                  either the latest ror or the ror before the last time the notional changed
+  FUNCTION calc_mtd_ror_notional_denom(p_as_of_date     DATE,
+                                       p_last_as_of_date DATE,
+                                       p_notional       NUMBER,
+                                       p_last_notional  NUMBER,
+                                       p_mtd_pnl        NUMBER,
+                                       p_last_mtd_pnl   NUMBER,
+                                       p_last_mtd_ror   NUMBER,
+                                       p_change_mtd_ror NUMBER,
+                                       p_last_change    CHAR) RETURN NUMBER DETERMINISTIC;
+  
+  -- calculate mtd ror for funds based on P&L position data loaded in a run
+  PROCEDURE calculate_mtd_ror(p_load_run_id IN source_load_run.load_run_id%TYPE);
+  
+  -- this procedure performs the calculations specified for the target table(s) of
+  -- the data loaded for the parameter values
+  PROCEDURE calculate(p_source_name IN source.source_name%TYPE,
+                      p_basis       IN source_basis.basis%TYPE,
+                      p_as_of_date  IN DATE);
+
+END pkg_calculator;
+/

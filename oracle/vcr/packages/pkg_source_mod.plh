@@ -1,0 +1,25 @@
+create or replace package vcr.pkg_source_mod
+-- $Header: vcr/packages/pkg_source_mod.plh 1.2 2005/08/16 14:45:08BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_mod';
+
+  procedure insert_detail(
+    p_source_name           in source.source_name%type,      
+    p_email_address         in source.email_address%type,    
+    p_secure_message_id     in source.secure_message_id%type,
+    p_tplus1_offset         in source.tplus1_offset%type,    
+    p_change_reason         in source.change_reason%type
+  );
+
+  procedure update_detail(
+    p_source_id             in source.source_id%type,       
+    p_source_name           in source.source_name%type,      
+    p_email_address         in source.email_address%type,    
+    p_secure_message_id     in source.secure_message_id%type,
+    p_tplus1_offset         in source.tplus1_offset%type,    
+    p_change_reason         in source.change_reason%type
+  );
+    
+end pkg_source_mod;
+/

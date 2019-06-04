@@ -1,0 +1,18 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_purger AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_purger.plh 1.5 2005/03/02 10:42:23GMT apenney PRODUCTION  $
+  --------------------------------------------------------------------------
+  --  A package to purge various forms of data from a source 
+  ------------------------------------------------------------------------
+
+  -- purge from the target table(s) that data to be replaced by new data from a load run
+  PROCEDURE purge_target_table(p_load_run_id IN source_load_run.load_run_id%TYPE);
+  
+  -- purge staging area for a source p_aource_file_id
+  PROCEDURE purge_staging_area(p_source_name IN source.source_name%TYPE);
+  
+  -- purge from source_position the positions to be replaced by a particular load run 
+  PROCEDURE purge_positions(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+END pkg_purger;
+/

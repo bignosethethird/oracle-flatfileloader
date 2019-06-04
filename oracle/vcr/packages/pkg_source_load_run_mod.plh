@@ -1,0 +1,80 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_source_load_run_mod AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_source_load_run_mod.plh 1.7.1.2.1.4 2005/09/27 13:16:00BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to create and maintain load run data  
+  ------------------------------------------------------------------------
+  
+  -- maintains for the specified load run a concatenated list of the sql statements executed to check 
+  -- whether the mandatory fields for the positions investment engine are not null 
+  PROCEDURE update_check_fields_sql(p_load_run_id      IN source_load_run.load_run_id%TYPE,
+                                    p_check_fields_sql IN source_load_run.check_fields_sql%TYPE);
+
+  -- saves the sql used to load data for a specified load run and file
+  PROCEDURE update_load_sql(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                            p_file_id     IN source_load_run_file.file_id%TYPE,
+                            p_file_type   IN source_load_run_file.file_type%TYPE,
+                            p_load_sql    IN source_load_run_file.load_sql%TYPE);
+
+  -- log the handled sql error for a specific load run
+  -- sets load run status to ERROR
+  PROCEDURE log_sqlerror(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+  -- log a generic error for a specific load run
+  -- sets load run status to ERROR
+  PROCEDURE log_error(p_error_code    IN NUMBER,
+                      p_error_message IN VARCHAR2,
+                      p_load_run_id   IN source_load_run.load_run_id%TYPE);
+
+  -- record the numbers of exceptions created by the validation step of this load run
+  PROCEDURE update_no_of_exceptions(p_load_run_id      IN source_load_run.load_run_id%TYPE,
+                                    p_no_of_exceptions IN source_load_run.no_of_exceptions%TYPE);
+                                    
+  -- record the numbers of records loaded for a specific load run and file
+  PROCEDURE update_no_of_records(p_load_run_id   IN source_load_run.load_run_id%TYPE,
+                                 p_file_id       IN source_load_run_file.file_id%TYPE,
+                                 p_file_type   IN source_load_run_file.file_type%TYPE,
+                                 p_no_of_records IN source_load_run_file.no_of_records%TYPE);
+
+  -- start a load run recording its unique identifiers 
+  -- Sets initial status to IN PROGRESS
+  FUNCTION create_load_run(p_as_of_date  IN DATE,
+                           p_source_name IN source.source_name%TYPE,
+                           p_basis       IN source_basis.basis%TYPE)
+    RETURN source_load_run.load_run_id%TYPE;
+
+  -- start a load run recording its unique identifiers 
+  -- Sets initial status to IN PROGRESS
+  PROCEDURE create_load_run(p_as_of_date  IN DATE,
+                           p_source_name IN source.source_name%TYPE,
+                           p_basis       IN source_basis.basis%TYPE);    
+    
+  -- add a file to a load run  
+  PROCEDURE add_file(p_load_run_id      IN source_load_run.load_run_id%TYPE,
+                     p_source_file_type IN source_file_type.source_file_type%TYPE,
+                     p_file_id          IN source_load_run_file.file_id%TYPE,
+                     p_filename         IN source_load_run_file.filename%TYPE,
+                     p_pathname         IN source_load_run_file.filename%TYPE,
+                     p_reporting_date   IN source_load_run_file.reporting_date%TYPE DEFAULT sysdate);
+
+  -- change the status of a load run   
+  PROCEDURE update_status(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                          p_status      IN source_load_run.status%TYPE);
+
+  -- remove any info on loading or checking from a load run (e.g. no of records or sql)
+  PROCEDURE clear_info(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+  -- set status of load run to COMPLETE and send any notifications to admin, support and IE staff
+  -- the status if the load run must be IN PROGRESS for this to suceed 
+  PROCEDURE set_complete(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                         p_reval_ind   IN VARCHAR2 DEFAULT 'N');
+  
+  -- release funds for a load run
+  PROCEDURE release_funds(p_load_run_id IN source_load_run.load_run_id%TYPE,
+                          p_ie_id       IN investment_engine.ie_id%TYPE,
+                          p_funds       IN VARCHAR2);
+                          
+  -- send error log for a load run
+  PROCEDURE send_error_log(p_load_run_id IN source_load_run.load_run_id%TYPE);                          
+END pkg_source_load_run_mod;
+/

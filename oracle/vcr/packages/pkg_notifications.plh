@@ -1,0 +1,89 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_notifications AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_notifications.plh 1.3.1.4 2005/10/06 14:11:46BST ghoekstra DEV  $
+  --------------------------------------------------------------------------
+  --  A package to send notifications to different types of recipients
+  ------------------------------------------------------------------------
+  pc_package                      constant varchar2(30):='vcr';
+  pc_schema                       constant varchar2(30):='pkg_notifications';
+  
+  c_tmp_dir_obj       constant varchar2(10) := 'VCRTMP';
+  c_log_dir_obj       constant varchar2(10) := 'VCRLOG';  
+  v_attachment_path   varchar2(250);
+  v_log_path          varchar2(250);    
+
+  -- common parameters:
+  -- p_subject: title of notification
+  -- p_body:    text of notification
+  -- p_attachment: optional attachment
+  -- p_load_run_id: optional relationship to a specific source_load_run
+
+  -- sends an email message to the defined admin and support email addresses
+  PROCEDURE notify_admin_and_support(p_subject         IN VARCHAR2,
+                                     p_body            IN VARCHAR2,
+                                     p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                                     p_attachment      IN CLOB DEFAULT NULL,
+                                     p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                                     p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                                     p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- sends an email message to the defined admin email addresses
+  PROCEDURE notify_admin(p_subject         IN VARCHAR2,
+                         p_body            IN VARCHAR2,
+                         p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                         p_attachment      IN CLOB DEFAULT NULL,
+                         p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                         p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                         p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- sends an email to defined support email addresses
+  PROCEDURE notify_support(p_subject         IN VARCHAR2,
+                         p_body            IN VARCHAR2,
+                         p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                         p_attachment      IN CLOB DEFAULT NULL,
+                         p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                         p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                         p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- sends an email to email addresses for p_ie_id investment engine
+  PROCEDURE notify_ie(p_ie_id           IN investment_engine.ie_id%TYPE,
+                      p_subject         IN VARCHAR2,
+                     p_body            IN VARCHAR2,
+                     p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                     p_attachment      IN CLOB DEFAULT NULL,
+                     p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                     p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                     p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- sends an email to the email addresses for the investment engine platform p_ie_id, p_ie_platform
+  PROCEDURE notify_ie_platform(p_ie_id           IN investment_engine.ie_id%TYPE,
+                               p_ie_platform     IN ie_platform.ie_platform%TYPE,
+                               p_subject         IN VARCHAR2,
+                               p_body            IN VARCHAR2,
+                               p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                               p_attachment      IN CLOB DEFAULT NULL,
+                               p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                               p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                               p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- sends secure message to source
+  PROCEDURE notify_source(p_source_id       IN source.source_id%TYPE,
+                          p_subject         IN VARCHAR2,
+                          p_body            IN VARCHAR2,
+                          p_attachment_name IN VARCHAR2 DEFAULT NULL,
+                          p_attachment      IN CLOB DEFAULT NULL,
+                          p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL,
+                         p_attachment2_name IN VARCHAR2 DEFAULT NULL,
+                         p_attachment2      IN CLOB DEFAULT NULL);
+
+  -- Executes the shell command that sends a secure message over the moveit infrastructure  
+  procedure notify_source_securely(
+    p_source_id       IN source.source_id%TYPE,
+    p_subject         IN VARCHAR2,
+    p_body            IN VARCHAR2,
+    p_attachment_name IN VARCHAR2 DEFAULT NULL,
+    p_attachment      IN CLOB DEFAULT NULL,
+    p_load_run_id     IN source_load_run.load_run_id%TYPE DEFAULT NULL);
+                         
+END pkg_notifications;
+/

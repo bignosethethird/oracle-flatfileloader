@@ -1,0 +1,94 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_limit_exception
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_limit_exception.plh 1.3.1.3 2005/08/17 17:49:01BST apenney DEV  $
+--------------------------------------------------------------------------
+-- Provides routines to query limit exceptions
+AS
+  -- formats source error log CLOB for sending as an attachment
+  FUNCTION format_source_error_log(p_load_run_id IN limit_exception.load_run_id%TYPE) RETURN CLOB;
+  
+  -- returns a list of exception classes
+  FUNCTION get_class_dropdown_list RETURN utl.global.t_result_set;
+  
+  -- returns a count of exception classes
+  FUNCTION get_class_dropdown_count RETURN INTEGER;
+  
+  -- returns details of an exception for updating
+  FUNCTION get_detail(p_as_of_date   IN limit_exception.as_of_date%TYPE,
+                      p_source_id    IN limit_exception.source_id%TYPE,
+                      p_exception_id IN limit_exception.exception_id%TYPE) RETURN utl.global.t_result_set;
+                      
+    -- returns list of exceptions 
+  FUNCTION get_list(p_source_fund_id     IN limit_exception.source_fund_id%TYPE,
+                    p_source_strategy_id IN limit_exception.source_strategy_id%TYPE,
+                    p_sub_strategy       IN limit_exception.sub_strategy%TYPE,
+                    p_source_broker_id   IN limit_exception.source_broker_id%TYPE,
+                    p_source_instrument_type_id IN limit_exception.source_instrument_type_id%TYPE,
+                    p_ie_id              IN investment_engine.ie_id%TYPE,
+                    p_ie_platform        IN ie_platform.ie_platform%TYPE,
+                    p_measure_rule_id    IN VARCHAR2,
+                    p_status             IN limit_exception.status%TYPE,
+                    p_type               IN limit_exception.type%TYPE,
+                    p_resolution_from_date IN DATE,
+                    p_resolution_to_date IN DATE,
+                    p_load_run_id        IN limit_exception.load_run_id%TYPE) RETURN utl.global.t_result_set;
+
+  -- returns count of exceptions
+  FUNCTION get_count(p_source_fund_id      IN limit_exception.source_fund_id%TYPE,
+                    p_source_strategy_id   IN limit_exception.source_strategy_id%TYPE,
+                    p_sub_strategy         IN limit_exception.sub_strategy%TYPE,
+                    p_source_broker_id     IN limit_exception.source_broker_id%TYPE,
+                    p_source_instrument_type_id IN limit_exception.source_instrument_type_id%TYPE,
+                    p_ie_id                IN investment_engine.ie_id%TYPE,
+                    p_ie_platform          IN ie_platform.ie_platform%TYPE,
+                    p_measure_rule_id    IN VARCHAR2,
+                    p_status               IN limit_exception.status%TYPE,
+                    p_type                 IN limit_exception.type%TYPE,
+                    p_resolution_from_date IN DATE,
+                    p_resolution_to_date   IN DATE,
+                    p_load_run_id          IN limit_exception.load_run_id%TYPE) RETURN INTEGER;
+
+  -- returns a fund level list of exception and position information
+  FUNCTION get_fund_summary_list(p_load_run_id IN limit_exception.load_run_id%TYPE,
+                                 p_ie_id       IN investment_engine.ie_id%TYPE) RETURN utl.global.t_result_set;
+                                 
+  -- returns a fund level count of exception and position information
+  FUNCTION get_fund_summary_count(p_load_run_id IN limit_exception.load_run_id%TYPE,
+                                  p_ie_id       IN investment_engine.ie_id%TYPE) RETURN INTEGER;
+
+  gc_tol_lev_measure_id_cfg_key CONSTANT VARCHAR2(50) := 'exception.tol_level.measure_id';
+  gc_tol_lev_rule_id_cfg_key    CONSTANT VARCHAR2(50) := 'exception.tol_level.rule_id';
+  
+  -- returns list of exceptions for IE error logs
+  FUNCTION get_ie_error_log(p_load_run_id         IN limit_exception.load_run_id%TYPE,
+                            p_ie_platform         IN ie_platform.ie_platform%TYPE,
+                            p_source_fund_id_list IN VARCHAR2,
+                            p_ie_id               IN investment_engine.ie_id%TYPE,
+                            p_status              IN limit_exception.status%TYPE,
+                            p_no_of_prior_dates   IN INTEGER DEFAULT 0) RETURN utl.global.t_result_set;
+
+  -- formats error log CLOB for sending as an attachment
+  FUNCTION format_ie_error_log(p_load_run_id         IN limit_exception.load_run_id%TYPE,
+                               p_ie_platform         IN ie_platform.ie_platform%TYPE,
+                               p_source_fund_id_list IN VARCHAR2,
+                               p_ie_id               IN investment_engine.ie_id%TYPE,
+                               p_fund_names          IN VARCHAR2,
+                               p_status              IN limit_exception.status%TYPE,
+                               p_no_of_prior_dates   IN INTEGER DEFAULT 0) RETURN CLOB;
+
+  -- returns list of exceptions for IE error log export
+  FUNCTION get_ie_error_log_export_list(p_load_run_id         IN limit_exception.load_run_id%TYPE,
+                                        p_source_fund_id_list IN VARCHAR2) RETURN utl.global.t_result_set;
+  
+  -- returns count of exceptions for IE error log export
+  FUNCTION get_ie_error_log_export_count(p_load_run_id         IN limit_exception.load_run_id%TYPE,
+                                         p_source_fund_id_list IN VARCHAR2) RETURN INTEGER;
+                                         
+  -- returns list of exceptions for source error log export
+  FUNCTION get_source_error_log_list(p_load_run_id IN limit_exception.load_run_id%TYPE) RETURN utl.global.t_result_set;
+  
+  -- returns count of exceptions for source error log export
+  FUNCTION get_source_error_log_count(p_load_run_id IN limit_exception.load_run_id%TYPE) RETURN INTEGER;
+
+END pkg_limit_exception;
+/

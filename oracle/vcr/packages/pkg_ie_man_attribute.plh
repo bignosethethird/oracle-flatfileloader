@@ -1,0 +1,21 @@
+CREATE OR REPLACE PACKAGE 
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_ie_man_attribute.plh 1.1 2005/09/16 16:43:22BST apenney DEV apenney(2005/09/19 10:03:03BST) $
+  --------------------------------------------------------------------------
+  -- Allows you to query investment engine mandatory attributes
+ vcr.pkg_ie_man_attribute
+ AS
+ 
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_ie_man_attribute';
+   
+  -- GUI list display based on partial name search string 
+  -- If none specified, return all.
+  function get_list(p_ie_id in investment_engine.ie_id%type)
+  return utl.global.t_result_set;
+  
+  function get_count(p_ie_id in investment_engine.ie_id%type)
+  return integer;
+
+end pkg_ie_man_attribute;
+/

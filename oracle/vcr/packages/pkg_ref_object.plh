@@ -1,0 +1,52 @@
+CREATE OR REPLACE PACKAGE 
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_ref_object.plh 1.5.1.2.1.3 2005/08/16 11:53:55BST apenney DEV  $
+  --------------------------------------------------------------------------
+  -- Allows you to query reference object information
+  -- e.g. funds or strategies for which estimates are obtained from external sources
+ vcr.pkg_ref_object AS
+    
+  -- returns a ref cursor for a result set of the id and description of all 
+  -- objects for use in dropdown lists in user interface
+  -- for the parameter source (e.g. webmark) and object type (e.g. benchmark fund)
+  FUNCTION get_dropdown_list (p_ref_source      IN ref_object.ref_source%TYPE, 
+                              p_ref_object_type IN ref_object.ref_object_type%TYPE) RETURN utl.global.t_result_set;
+  
+  -- returns a count of all 
+  -- objects for use in dropdown lists in user interface
+  -- for the parameter source (e.g. webmark) and object type (e.g. benchmark fund)
+  FUNCTION get_dropdown_count (p_ref_source      IN ref_object.ref_source%TYPE, 
+                               p_ref_object_type IN ref_object.ref_object_type%TYPE) RETURN INTEGER;
+ 
+                            
+  -- returns reference object description for parameter id
+  FUNCTION get_description(p_ref_object_id IN ref_object.ref_object_id%TYPE) RETURN VARCHAR2;
+  
+  gc_ref_source_webmark   CONSTANT VARCHAR2(10) := 'WEBMARK';
+  gc_ref_source_datapool  CONSTANT VARCHAR2(10) := 'DATAPOOL';
+  
+  gc_object_type_map      CONSTANT VARCHAR2(10) := 'OBJECT';
+  gc_unit_type_map        CONSTANT VARCHAR2(10) := 'UNIT';
+  gc_measure_type_map     CONSTANT VARCHAR2(10) := 'MEASURE';
+  
+  gc_notional_vcr_type    CONSTANT VARCHAR2(10) := 'NOTIONAL';
+  gc_mtdpnl_vcr_type      CONSTANT VARCHAR2(10) := 'MTDPNL';
+  gc_dailypnl_vcr_type    CONSTANT VARCHAR2(10) := 'DAILYPNL';
+  gc_mtdror_vcr_type      CONSTANT VARCHAR2(10) := 'MTDROR';
+  gc_navpershare_vcr_type CONSTANT VARCHAR2(20) := 'NAVPERSHARE';
+  
+  gc_percentage_vcr_type  CONSTANT VARCHAR2(10) := 'PERCENTAGE';
+  gc_usd_vcr_type         CONSTANT VARCHAR2(10) := 'USD';
+  
+  gc_source_value_type    CONSTANT CHAR(1) := 'S';
+  gc_calc_value_type      CONSTANT CHAR(1) := 'C';
+  
+  gc_me_fund_vcr_type     CONSTANT VARCHAR2(15) := 'MEFUND';
+  gc_bm_fund_vcr_type     CONSTANT VARCHAR2(15) := 'BENCHMARKFUND';
+    
+  gc_datapool_classpath_cfg_key  CONSTANT VARCHAR2(50) := 'vcr.datapool.classpath';
+  gc_datapool_jdbcdriver_cfg_key CONSTANT VARCHAR2(50) := 'vcr.datapool.jdbcdriver';
+  gc_datapool_jdbcurl_cfg_key    CONSTANT VARCHAR2(50) := 'vcr.datapool.jdbcurl';
+  
+END pkg_ref_object;
+/

@@ -1,0 +1,49 @@
+CREATE OR REPLACE PACKAGE 
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_investment_engine.plh 1.7.1.1.1.5 2005/09/27 13:15:52BST apenney DEV  $
+  --------------------------------------------------------------------------
+  -- Allows you to query investment engine info
+ vcr.pkg_investment_engine 
+ AS
+ 
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_market';
+ 
+  gc_ror_calc_denom_notional CONSTANT VARCHAR2(20) := 'NOTIONAL';
+  gc_ror_calc_denom_mkt_val CONSTANT VARCHAR2(20) := 'PRIORMARKETVALUE';
+  
+  -- returns the number of investment engines including/excluding the undefined investment engine
+  FUNCTION get_dropdown_count(p_include_undefined IN CHAR DEFAULT 'Y')  RETURN INTEGER;
+    
+  -- returns a ref cursor for a result set of the id and description of all 
+  -- investment engines for use in dropdown lists in user interface
+  FUNCTION get_dropdown_list(p_include_undefined IN CHAR DEFAULT 'Y') RETURN utl.global.t_result_set;
+  -- returns a ref cursor for a result set of the id and description of all 
+  -- investment engine platforms for an investment engine 
+  -- for use in dropdown lists in user interface
+  FUNCTION get_platform_dropdown_list(p_ie_id IN ie_platform.ie_id%TYPE,
+                                      p_include_undefined IN CHAR DEFAULT 'Y') RETURN utl.global.t_result_set;
+  
+  -- returns a count of the  
+  -- investment engine platforms for an investment engine 
+  -- for use in dropdown lists in user interface
+  FUNCTION get_platform_dropdown_count(p_ie_id IN ie_platform.ie_id%TYPE,
+                                       p_include_undefined IN CHAR DEFAULT 'Y') RETURN INTEGER;
+
+  -- returns investment engine description for parameter id
+  FUNCTION get_description(p_ie_id IN investment_engine.ie_id%TYPE) RETURN VARCHAR2;
+
+  -- returns the manager estimate source for the specified investment engine
+  FUNCTION get_me_source(p_ie_id IN investment_engine.ie_id%TYPE) RETURN VARCHAR2;
+  
+  -- GUI list display based on partial name search string 
+  -- If none specified, return all.
+  function get_list
+  return utl.global.t_result_set;
+  function get_count
+  return integer;  
+  function get_detail(p_ie_id in investment_engine.ie_id%type)
+  return utl.global.t_result_set;
+  
+end pkg_investment_engine;
+/

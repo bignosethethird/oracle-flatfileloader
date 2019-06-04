@@ -1,0 +1,32 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_instrument_type_mod IS
+
+  -- $Header: vcr/packages/pkg_instrument_type_mod.plh 1.4.1.2 2005/09/27 13:15:57BST apenney DEV  $
+  -- Purpose : Provide routines to add and update instrument type data
+
+-- Creates a mapping between a source instrument type and an investment engine instrument type
+  -- If a mapping already exists for the source instrument type for the investment engine of the IE ins trument type
+  -- this is deleted and replaced with a new one for the specified IE instrument type
+  -- if the ie_instrument_type_id is set to unmapped the mapping is deleted
+  PROCEDURE update_source_ie_detail(p_source_instrument_type_id IN source_ie_ins_type.source_instrument_type_id%TYPE,
+                                    p_ie_instrument_type_id     IN source_ie_ins_type.ie_instrument_type_id%TYPE,
+                                    P_ie_id                     IN investment_engine.ie_id%TYPE,
+                                    p_change_reason             IN source_ie_ins_type.change_reason%TYPE);
+
+  -- Adds a new investment engine instrument type
+  -- raises an application error if the instrument type already exists    
+  -- returns the allocated ieinstrumenttypeid                    
+  FUNCTION add_ie_instrument_type(p_ie_id              IN ie_instrument_type.ie_id%TYPE,
+                                  p_ie_instrument_type IN ie_instrument_type.ie_instrument_type%TYPE,
+                                  p_category           IN ie_instrument_type.category%TYPE,
+                                  p_change_reason      IN ie_instrument_type.change_reason%TYPE,
+                                  p_stale_price_period IN ie_instrument_type.stale_price_period%TYPE) RETURN INTEGER;
+
+  -- Updates an investment engine instrument type
+  PROCEDURE update_ie_instrument_type(p_ie_instrument_type_id IN ie_instrument_type.ie_instrument_type_id%TYPE,
+                                      p_ie_instrument_type    IN ie_instrument_type.ie_instrument_type%TYPE,
+                                      p_category              IN ie_instrument_type.category%TYPE,
+                                      p_change_reason         IN ie_instrument_type.change_reason%TYPE,
+                                      p_stale_price_period    IN ie_instrument_type.stale_price_period%TYPE);
+
+END pkg_instrument_type_mod;
+/

@@ -1,0 +1,27 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_validator is
+  ------------------------------------------------------------------------------------------------------
+  -- $Header: vcr/packages/pkg_validator.plh 1.3.1.2 2005/08/11 13:40:15BST apenney DEV  $
+  ------------------------------------------------------------------------------------------------------
+  --  A package to apply validation measure rules to VCR data to generate exception records
+  ------------------------------------------------------------------------------------------------------
+
+  gc_exception_status_new          CONSTANT VARCHAR2(10) := 'NEW';
+  gc_exception_status_closed       CONSTANT VARCHAR2(10) := 'CLOSED';
+  gc_exception_status_tbr          CONSTANT VARCHAR2(10) := 'TBR';
+  gc_exception_status_resolved     CONSTANT VARCHAR2(10) := 'RESOLVED';
+  
+  gc_exception_type_limit_break    CONSTANT VARCHAR2(20) := 'Limit Break';
+  gc_exception_type_calc_error     CONSTANT VARCHAR2(20) := 'Calculation Error';
+
+  -- this procedure creates records in the limit_exception table
+  -- by applying the validation measure rules applicable for
+  -- the parameter source, basis and as of date
+  -- raises the exception utl.pkg_exceptions.e_source_is_loading if the source is already being loaded 
+
+  PROCEDURE validate(p_source_name IN source.source_name%TYPE,
+                     p_basis       IN source_basis.basis%TYPE,
+                     p_as_of_date  IN DATE);
+
+
+END pkg_validator;
+/

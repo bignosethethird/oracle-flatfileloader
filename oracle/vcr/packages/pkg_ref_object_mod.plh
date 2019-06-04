@@ -1,0 +1,20 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_ref_object_mod is
+  ------------------------------------------------------------------------------------------------------
+  -- $Header: vcr/packages/pkg_ref_object_mod.plh 1.1.1.2 2005/08/16 11:53:55BST apenney DEV  $
+  ------------------------------------------------------------------------------------------------------
+  --  A package to get data from sources of reference measures such as Webmark or Datapool
+  -- and record it in VCR
+  ------------------------------------------------------------------------------------------------------
+   
+  -- get all data changes from webmark
+  PROCEDURE get_webmark(p_as_of_date IN DATE);
+  
+  -- get all data changes from webmark
+  PROCEDURE get_datapool(p_as_of_date IN DATE);
+  
+  -- get all data changes from a particular reference source
+  PROCEDURE get(p_ref_source IN ref_source.ref_source%TYPE,
+                p_as_of_date IN DATE);
+
+END pkg_ref_object_mod;
+/

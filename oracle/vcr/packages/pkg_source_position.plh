@@ -1,0 +1,43 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_source_position
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_source_position.plh 1.1.1.2 2005/08/11 13:40:11BST apenney DEV  $
+--------------------------------------------------------------------------
+-- Provides routines to query source positions
+AS
+  -- returns list of positions for the following parameters
+  -- 
+  FUNCTION get_list(p_source_id             IN source_position.source_id%TYPE,
+                    p_as_of_date            IN source_position.as_of_date%TYPE,
+                    p_basis                 IN source_position.basis%TYPE,
+                    p_load_run_id           IN source_position.load_run_id%TYPE DEFAULT NULL,
+                    p_ie_id                 IN source_fund.ie_id%TYPE DEFAULT NULL,
+                    p_fund                  IN source_position.fund%TYPE DEFAULT NULL,
+                    p_strategy              IN source_position.strategy%TYPE DEFAULT NULL,
+                    p_sub_strategy          IN source_position.sub_strategy%TYPE DEFAULT NULL,
+                    p_ie_platform           IN source_fund.ie_platform%TYPE DEFAULT NULL,
+                    p_instrument_type       IN source_position.instrument_type%TYPE DEFAULT NULL,
+                    p_instrument_id         IN source_position.instrument_id%TYPE DEFAULT NULL,
+                    p_instrument            IN source_position.instrument%TYPE DEFAULT NULL,
+                    p_broker                IN source_position.broker%TYPE DEFAULT NULL,
+                    p_key                   IN source_position.key%TYPE DEFAULT NULL,
+                    p_seq_id                IN source_position.seq_id%TYPE DEFAULT NULL) RETURN utl.global.t_result_set;
+                    
+  -- returns count of positions for the following parameters
+  --                     
+  FUNCTION get_count(p_source_id             IN source_position.source_id%TYPE,
+                     p_as_of_date            IN source_position.as_of_date%TYPE,
+                     p_basis                 IN source_position.basis%TYPE,
+                     p_load_run_id           IN source_position.load_run_id%TYPE DEFAULT NULL,
+                     p_ie_id                 IN source_fund.ie_id%TYPE DEFAULT NULL,
+                     p_fund                  IN source_position.fund%TYPE DEFAULT NULL,
+                     p_strategy              IN source_position.strategy%TYPE DEFAULT NULL,
+                     p_sub_strategy          IN source_position.sub_strategy%TYPE DEFAULT NULL,
+                     p_ie_platform           IN source_fund.ie_platform%TYPE DEFAULT NULL,
+                     p_instrument_type       IN source_position.instrument_type%TYPE DEFAULT NULL,
+                     p_instrument_id         IN source_position.instrument_id%TYPE DEFAULT NULL,
+                     p_instrument            IN source_position.instrument%TYPE DEFAULT NULL,
+                     p_broker                IN source_position.broker%TYPE DEFAULT NULL,
+                     p_key                   IN source_position.key%TYPE DEFAULT NULL,
+                     p_seq_id                IN source_position.seq_id%TYPE DEFAULT NULL) RETURN INTEGER;
+END pkg_source_position;
+/

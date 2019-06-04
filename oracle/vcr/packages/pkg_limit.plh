@@ -1,0 +1,89 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_limit
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_limit.plh 1.2.1.4 2005/09/29 12:54:00BST apenney DEV  $
+--------------------------------------------------------------------------
+-- Allows you to query limit information
+AS
+  -- gets a list of measure rules
+  FUNCTION get_measure_rule_dropdown_list RETURN utl.global.t_result_set;
+
+  -- gets a count of measure rules
+  FUNCTION get_measure_rule_dropdown_cnt RETURN INTEGER;
+  
+  -- returns a textual description of a limit, including its criteria
+  FUNCTION get_description(p_limit_id IN limit.limit_id%TYPE) RETURN VARCHAR2;
+  
+  -- returns a textual description of a limit version, includign the values associated with version
+  FUNCTION get_version_description(p_limit_id      IN limit_version.limit_id%TYPE,
+                                   p_limit_version IN limit_version.limit_version%TYPE) RETURN VARCHAR2;
+                                   
+  -- returns the name of rule parameter e.g. Upper Limit
+  FUNCTION get_rule_parameter_description(p_rule_parameter_id IN validation_rule_parameter.rule_parameter_id%TYPE) RETURN VARCHAR2;  
+  
+  -- returns the description of a rule e.g. Range Check
+  FUNCTION get_rule_description(p_rule_id IN validation_rule.rule_id%TYPE) RETURN VARCHAR2;  
+
+  -- returns a description of the measure rule a limit is for
+  FUNCTION get_measure_rule_description(p_limit_id IN limit.limit_id%TYPE) RETURN VARCHAR2;
+  
+  -- returns the name of a limit header parameter (aka limit criteria)
+  FUNCTION get_header_description(p_header_parameter_id IN limit_header_parameter.header_parameter_id%TYPE) RETURN VARCHAR2; 
+  
+  -- returns the description of a measure
+  FUNCTION get_measure_description(p_measure_id IN validation_measure.measure_id%TYPE) RETURN VARCHAR2;  
+  
+  -- returns the decoded description of the value of a particular limit criteria e.g. a fund name
+  FUNCTION get_header_value_description(p_header_parameter_id IN limit_header_parameter.header_parameter_id%TYPE,
+                                        p_value               IN limit_header_value.value%TYPE) RETURN VARCHAR2;
+
+  -- returns values of a limit version
+  FUNCTION get_version_values(p_limit_id      IN limit_version.limit_id%TYPE,
+                              p_limit_version IN limit_version.limit_version%TYPE) RETURN VARCHAR2;
+
+
+  -- returns value of a limit version parameter value
+  FUNCTION get_version_value(p_limit_id      IN limit_version.limit_id%TYPE,
+                             p_limit_version IN limit_version.limit_version%TYPE,
+                           p_rule_parameter_id IN limit_param_value.rule_parameter_id%TYPE) RETURN NUMBER;
+
+                              
+  -- gets a description of what a limit is for (e.g. a fund and instrument type combination; an investment engine etc)
+  FUNCTION get_header_summary(p_limit_id IN limit_version.limit_id%TYPE) RETURN VARCHAR2;
+
+  -- gets a list of header parameters for a measure rule as a subset of an overall list of 10 possible header params
+  FUNCTION get_header_param_list(p_measure_rule_id IN VARCHAR2) RETURN utl.global.t_result_set;
+  
+  -- gets a list of all possible header values
+  FUNCTION get_header_value_list RETURN utl.global.t_result_set;  
+  
+  -- gets a count of all possible header values
+  FUNCTION get_header_value_count RETURN INTEGER;
+  
+  -- gets a list of limits for the criteria
+  FUNCTION get_list (p_measure_rule_id IN VARCHAR2,
+                     p_source_id       IN source.source_id%TYPE,
+                     p_ie_id           IN investment_engine.ie_id%TYPE,
+                     p_header_values   IN VARCHAR2) RETURN utl.global.t_result_set;
+  
+  -- gets a count of limits for the criteria                      
+  FUNCTION get_count(p_measure_rule_id IN VARCHAR2,
+                     p_source_id       IN source.source_id%TYPE,
+                     p_ie_id           IN investment_engine.ie_id%TYPE,
+                     p_header_values   IN VARCHAR2) RETURN INTEGER;
+  
+  -- gets the versions of a limit                     
+  FUNCTION get_version_list(p_limit_id IN limit_version.limit_id%TYPE) RETURN utl.global.t_result_set;
+  
+  -- gets a count of the versions of a limit
+  FUNCTION get_version_count(p_limit_id IN limit_version.limit_id%TYPE) RETURN INTEGER;
+  
+  -- gets limit detail
+  FUNCTION get_detail(p_limit_id IN limit_version.limit_id%TYPE) RETURN utl.global.t_result_set;
+  
+  -- gets a list of the parameters for a measure rule
+ FUNCTION get_rule_param_list(p_measure_rule_id IN VARCHAR2) RETURN utl.global.t_result_set;  
+  
+  -- gets a count of the parameters for a measure rule
+  FUNCTION get_rule_param_count(p_measure_rule_id IN VARCHAR2) RETURN INTEGER;
+END pkg_limit;
+/

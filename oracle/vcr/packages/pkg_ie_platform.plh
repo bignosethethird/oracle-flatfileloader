@@ -1,0 +1,24 @@
+create or replace package vcr.pkg_ie_platform
+-- $Header: vcr/packages/pkg_ie_platform.plh 1.2.1.2 2005/09/27 13:15:59BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_ie_platform';
+
+  -- GUI Interface   
+  -- Gets resultset that fit search criteria.
+  -- If no search criteria are specified, returns the entire recordset.
+  -- Where necessary, we break long strings up with carriage returns.
+  function get_list      
+  return utl.global.t_result_set;
+  
+  function get_count 
+  return integer;
+
+  function get_detail(p_ie_id         in ie_platform.ie_id%type,
+                      p_ie_platform   in ie_platform.ie_platform%type)
+  return utl.global.t_result_set;
+
+
+    
+end pkg_ie_platform;
+/

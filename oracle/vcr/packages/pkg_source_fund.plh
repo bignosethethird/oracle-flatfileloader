@@ -1,0 +1,93 @@
+CREATE OR REPLACE PACKAGE
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_source_fund.plh 1.5.1.3.1.3 2005/08/16 11:54:24BST apenney DEV  $
+--------------------------------------------------------------------------
+-- Allows you to query fund information
+ vcr.pkg_source_fund AS
+
+ 
+  -- returns description of a source fund
+  FUNCTION get_description(p_source_fund_id IN source_fund.source_fund_id%TYPE) RETURN VARCHAR2;
+  
+-- returns a ref cursor for a result set with the following columns
+  -- source_fund_id
+  -- fund
+  -- for use in dropdown lists in user interface
+  -- if load run id is specified just get funds for the source of the load run
+  FUNCTION get_dropdown_list(p_load_run_id IN source_load_run.load_run_id%TYPE DEFAULT NULL)
+    RETURN utl.global.t_result_set;
+  
+  -- returns a count of funds
+  -- for use in dropdown lists in user interface
+  -- if load run id is specified just get funds for the source of the load run
+  FUNCTION get_dropdown_count(p_load_run_id IN source_load_run.load_run_id%TYPE DEFAULT NULL)
+    RETURN INTEGER;
+  
+  -- returns a ref cursor for a result set with the following columns
+  -- source_fund_id
+  -- fund
+  -- for use in dropdown lists in user interface
+  -- if source_id, ie_id or ie_platform are specified just get the relavant funds
+  FUNCTION get_filter_dropdown_list(p_source_id   IN source.source_id%TYPE,
+                                    p_ie_id       IN investment_engine.ie_id%TYPE DEFAULT NULL,
+                                    p_ie_platform IN ie_platform.ie_platform%TYPE DEFAULT NULL)
+    RETURN utl.global.t_result_set;
+  
+  -- returns a count of funds
+  -- for use in dropdown lists in user interface
+  -- if source_id, ie_id or ie_platform are specified just get the relavant funds
+  FUNCTION get_filter_dropdown_count(p_source_id   IN source.source_id%TYPE,
+                                     p_ie_id       IN investment_engine.ie_id%TYPE DEFAULT NULL,
+                                     p_ie_platform IN ie_platform.ie_platform%TYPE DEFAULT NULL)
+    RETURN INTEGER;   
+    
+  -- returns a count of the number of funds for the parameters
+  -- Parameters:
+  --         p_source_id id of source providing data for fund
+  --         p_ie_id optional id of investment engine 
+  --         p_fund  optional fund code
+  -- used in fund list screen
+  
+  FUNCTION get_count(p_source_id IN source.source_id%TYPE,
+                     p_ie_id     IN investment_engine.ie_id%TYPE,
+                     p_fund      IN source_fund.fund%TYPE) RETURN INTEGER;
+                    
+  -- returns a ref cursor for a result set of funds with the following columns
+  --         source_fund.source_fund_id "source_fund_id"
+  --         source.source_name "Source"
+  --         source_fund.fund "Fund"
+  --         investment_engine.description "Investment Engine"
+  --         source_fund.active_ind "Active"
+  --         investment_engine.me_source "ME Source"
+  --         ref_object.ref_object_description "Fund in ME Source"
+  --         ie_platform.description "Platform"
+  --         ref_object.ref_object_description "Benchmark Fund"
+  --         count of strategies
+  -- Parameters:
+  --         p_source_id  id of source providing data for fund
+  --         p_ie_id optional id of investment engine 
+  --         p_fund  optional fund code
+  -- used in fund list screen
+  
+  FUNCTION get_list(p_source_id IN source.source_id%TYPE,
+                    p_ie_id     IN investment_engine.ie_id%TYPE,
+                    p_fund      IN source_fund.fund%TYPE)
+    RETURN utl.global.t_result_set;
+  
+  -- returns a ref cursor for a result set of one fund the following columns
+  --         source.source_name "Source"
+  --         source_fund.fund "Fund"
+  --         investment_engine.ie_id "Investment Engine"
+  --         source_fund.active_ind "Active"
+  --         investment_engine.me_source "ME Source"
+  --         ref_object.ref_object_id "Fund in ME Source"
+  --         ie_platform.ie_platform "Platform"
+  --         ref_object.ref_object_id "Benchmark Fund"
+  --         source_fund.source_fund_id
+  --         source_fund.source_id
+  -- Parameters:
+  --         p_source_fund_id - PK of source_fund record
+  -- used in fund detail screen
+  FUNCTION get_detail(p_source_fund_id IN source_fund.source_fund_id%TYPE) RETURN utl.global.t_result_set;
+END pkg_source_fund;
+/

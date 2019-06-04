@@ -1,0 +1,53 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_bloomberg AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_bloomberg.plh 1.1 2005/07/20 15:37:20BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to obtain, store and match closing prices from Bloomberg for VSP position data
+  ------------------------------------------------------------------------
+  
+  gc_request_status_initial      CONSTANT VARCHAR2(10)  := 'INITIAL';
+  gc_request_status_waiting      CONSTANT VARCHAR2(10)  := 'WAITING';
+  gc_request_status_complete     CONSTANT VARCHAR2(10)  := 'COMPLETE';
+  gc_request_status_error        CONSTANT VARCHAR2(10)  := 'ERROR';
+  gc_request_status_cancelled    CONSTANT VARCHAR2(10)  := 'CANCELLED';
+  
+  gc_security_code_type_isin     CONSTANT VARCHAR2(10) := 'ISIN';
+  gc_security_code_type_cusip    CONSTANT VARCHAR2(10) := 'CUSIP';
+  gc_security_code_type_sedol    CONSTANT VARCHAR2(10) := 'SEDOL';
+  gc_security_code_type_bbticker CONSTANT VARCHAR2(10) := 'BBTICKER';
+  
+  gc_return_code_success         CONSTANT VARCHAR2(3) := '0';
+  
+  gc_not_subscribed              CONSTANT VARCHAR2(4) := 'N.S.';
+  gc_not_applicable              CONSTANT VARCHAR2(4) := ' ';
+  gc_not_available               CONSTANT VARCHAR2(4) := 'N.A.';
+  gc_not_downloadable            CONSTANT VARCHAR2(4) := 'N.D.';
+  gc_field_unknown               CONSTANT VARCHAR2(11) := 'FLD UNKNOWN';
+  
+  gc_outgoing_directory          CONSTANT VARCHAR2(100) := 'VCRBLOOMBERGOUTGOING';
+  gc_incoming_directory          CONSTANT VARCHAR2(100) := 'VCRBLOOMBERGINCOMING';
+  gc_archive_directory           CONSTANT VARCHAR2(100) := 'VCRBLOOMBERGARCHIVE';
+  
+  gc_firm_name_config_key        CONSTANT VARCHAR2(50) := 'vcr.bloomberg.firmname';
+  gc_poll_interval_config_key    CONSTANT VARCHAR2(50) := 'vcr.bloomberg.poll_interval';
+  gc_poll_attempts_config_key    CONSTANT VARCHAR2(50) := 'vcr.bloomberg.poll_attempts';
+  
+  -- this procedure gets closing prices for positions for the latest load run for the parameter set
+  PROCEDURE get_closing_prices(p_source_name IN source.source_name%TYPE,
+                               p_basis       IN source_basis.basis%TYPE,
+                               p_as_of_date  IN DATE);
+
+  -- formats Bloomberg Data Licence request file for a specified request id
+  PROCEDURE create_request_file(p_request_id IN security_price_request.request_id%TYPE);
+  
+  -- wait for Bloomberg Data Licence response file for a specified request id
+  PROCEDURE process_response(p_request_id IN security_price_request.request_id%TYPE);
+  
+  -- match prices to position
+  -- in each case we only match successfully retrieved prices
+  -- positions that have been matched already are ignored 
+  -- matching is done in isin, cusp, sedol then bloomberg ticker precedence
+  -- if multiple prices have been obtained the latest is used
+  PROCEDURE match_to_positions(p_load_run_id IN source_load_run.load_run_id%TYPE);
+END pkg_bloomberg;
+/

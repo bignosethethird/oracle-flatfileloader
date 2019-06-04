@@ -1,0 +1,34 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_checker AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_checker.plh 1.5.1.2 2005/07/21 14:21:05BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to perform preliminary post load checks on data loaded from a source
+  --  prior to validation process running
+  ------------------------------------------------------------------------
+  gc_mand_check_yn_cfg_key CONSTANT VARCHAR2(50) := 'vcr.checker.mand_fields_check_yn';
+  gc_type_check_yn_cfg_key CONSTANT VARCHAR2(50) := 'vcr.checker.type_fields_check_yn';
+  gc_max_checks_cfg_key CONSTANT VARCHAR2(50) := 'vcr.checker.max_checks';
+  
+  gv_max_checks NATURAL := 50;
+   
+  -- perform the post load data checks on the data loaded in target tables(s) 
+  -- for a particular load run
+  PROCEDURE check_target_table(p_load_run_id IN source_load_run.load_run_id%TYPE);
+  
+  -- perform the preliminary data checks on the positions loaded in a particular load run
+  PROCEDURE check_positions(p_load_run_id IN source_load_run.load_run_id%TYPE);
+  
+  --  returns false if the parameter string is not a number
+  FUNCTION is_a_number(p_field IN VARCHAR2) RETURN INTEGER DETERMINISTIC;
+  
+  --  returns false if the parameter string is not a date
+  FUNCTION is_a_date(p_field IN VARCHAR2, p_format IN VARCHAR2) RETURN INTEGER DETERMINISTIC;
+
+  -- casts a string to a number, returning null if the string is invalid
+  FUNCTION to_number_or_null(p_field IN VARCHAR2) RETURN NUMBER DETERMINISTIC;
+  
+  -- casts a string to a date, returning null if the string is invalid
+  FUNCTION to_date_or_null(p_field IN VARCHAR2, p_format IN VARCHAR2) RETURN DATE DETERMINISTIC;
+
+END pkg_checker;
+/

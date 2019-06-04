@@ -1,0 +1,38 @@
+create or replace package vcr.pkg_field_target_column_mod
+-- $Header: vcr/packages/pkg_field_target_column_mod.plh 1.1 2005/07/29 16:56:31BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_field_target_column_mod';
+
+  procedure delete_detail(
+    p_file_type                in field_target_column.file_type%type,
+    p_field_name               in field_target_column.field_name%type,
+    p_table_name               in field_target_column.table_name%type, 
+    p_column_name              in field_target_column.column_name%type, 
+    --p_accounting_period        in field_target_column.accounting_period%type,
+    --p_in_unique_key            in field_target_column.in_unique_key%type,
+    p_change_reason            in field_target_column.change_reason%type
+  );
+
+  procedure insert_detail(
+    p_file_type                in field_target_column.file_type%type,
+    p_field_name               in field_target_column.field_name%type,
+    p_table_name               in field_target_column.table_name%type, 
+    p_column_name              in field_target_column.column_name%type, 
+    p_accounting_period        in field_target_column.accounting_period%type,
+    p_in_unique_key            in field_target_column.in_unique_key%type,
+    p_change_reason            in field_target_column.change_reason%type
+  );
+
+  procedure update_detail(
+    p_file_type                in field_target_column.file_type%type,
+    p_field_name               in field_target_column.field_name%type,
+    p_table_name               in field_target_column.table_name%type, 
+    p_column_name              in field_target_column.column_name%type, 
+    p_accounting_period        in field_target_column.accounting_period%type,
+    p_in_unique_key            in field_target_column.in_unique_key%type,
+    p_change_reason            in field_target_column.change_reason%type
+  );
+    
+end pkg_field_target_column_mod;
+/

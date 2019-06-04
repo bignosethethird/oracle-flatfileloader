@@ -1,0 +1,30 @@
+create or replace package vcr.pkg_file_type_field
+-- $Header: vcr/packages/pkg_file_type_field.plh 1.2 2005/09/27 13:15:48BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_file_type_field';
+
+  -- GUI Interface   
+  -- Gets resultset that fit search criteria.
+  -- If no search criteria are specified, returns the entire recordset.
+  -- Where necessary, we break long strings up with carriage returns.
+  function get_list(  p_file_type    in file_type_field.file_type%type,
+                      p_field_name   in file_type_field.field_name%type)
+  return utl.global.t_result_set;
+  
+  function get_count( p_file_type    in file_type_field.file_type%type,
+                      p_field_name   in file_type_field.field_name%type) 
+  return integer;
+
+  function get_detail(p_file_type    in file_type_field.file_type%type,
+                      p_field_name   in file_type_field.field_name%type)
+  return utl.global.t_result_set;
+    
+    
+  function get_dropdown_list(p_file_type in file_type_field.file_type%type)
+  return utl.global.t_result_set;
+  
+  function get_dropdown_count( p_file_type    in file_type_field.file_type%type) 
+  return integer;    
+end pkg_file_type_field;
+/

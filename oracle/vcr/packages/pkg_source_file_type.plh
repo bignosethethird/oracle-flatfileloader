@@ -1,0 +1,21 @@
+create or replace package vcr.pkg_source_file_type
+-- $Header: vcr/packages/pkg_source_file_type.plh 1.1 2005/08/01 14:08:37BST ghoekstra DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_source_file_type';
+
+  -- GUI Interface   
+  -- Gets resultset that fit search criteria.
+  -- If no search criteria are specified, returns the entire recordset.
+  -- Where necessary, we break long strings up with carriage returns.
+  function get_list      
+  return utl.global.t_result_set;
+  
+  function get_count 
+  return integer;
+
+  function get_detail(p_source_file_type         in source_file_type.source_file_type%type)
+  return utl.global.t_result_set;
+    
+end pkg_source_file_type;
+/

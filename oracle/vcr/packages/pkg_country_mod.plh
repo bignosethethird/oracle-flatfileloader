@@ -1,0 +1,18 @@
+CREATE OR REPLACE PACKAGE
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_country_mod.plh 1.3 2005/03/02 10:41:45GMT apenney PRODUCTION  $
+--------------------------------------------------------------------------
+-- Allows you to update country information
+ vcr.pkg_country_mod AS
+
+  -- Updates a source_country record for parameters
+  --         p_source_id - source that country is from
+  --         p_country
+  --         p_iso_country_code  - assigned iso country code
+  --         p_change_reason   - textual rational for change
+  PROCEDURE update_detail(p_source_id        IN source_country.source_id%TYPE,
+                          p_country          IN source_country.country%TYPE,
+                          p_iso_country_code IN source_country.iso_country_code%TYPE,
+                          p_change_reason    IN source_country.change_reason%TYPE);
+END pkg_country_mod;
+/

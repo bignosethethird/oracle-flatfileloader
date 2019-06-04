@@ -1,0 +1,13 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_filter AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_filter.plh 1.4.1.1 2005/03/02 10:42:01GMT apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to discard unwanted records 
+  ------------------------------------------------------------------------
+  
+  PROCEDURE filter_target_table(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+  PROCEDURE filter_positions(p_load_run_id IN source_load_run.load_run_id%TYPE);
+
+END pkg_filter;
+/

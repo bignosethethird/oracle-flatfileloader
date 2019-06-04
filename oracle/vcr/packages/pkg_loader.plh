@@ -1,0 +1,25 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_loader AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_loader.plh 1.5.1.2 2005/05/17 14:09:08BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to load source data from a staging area to specific table 
+  --  where the data is persisted
+  ------------------------------------------------------------------------
+  -- this procedure creates records in the defined target table for the source 
+  -- by selecting from the source_staging_area table
+  -- raises the exception utl.pkg_exceptiopns.e_source_is_loading if the source is already being loaded 
+
+  PROCEDURE load(p_source_name IN source.source_name%TYPE,
+                 p_basis       IN source_basis.basis%TYPE,
+                 p_as_of_date  IN DATE);
+
+  -- extracts value of field p_field_name from staging record p_record
+  -- called from load sql therefore in package header
+  FUNCTION get_value(p_field_name IN VARCHAR2, p_record IN VARCHAR2) RETURN VARCHAR2 PARALLEL_ENABLE DETERMINISTIC;
+
+  PRAGMA RESTRICT_REFERENCES (get_value, WNDS, RNPS, WNPS);
+
+  -- appends p_appended_clob to p_original_clob
+  FUNCTION append_clob(p_original_clob IN CLOB, p_appended_clob IN CLOB) RETURN CLOB DETERMINISTIC;
+END pkg_loader;
+/

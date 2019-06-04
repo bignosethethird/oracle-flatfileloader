@@ -1,0 +1,30 @@
+create or replace package vcr.pkg_prime_broker
+-- $Header: vcr/packages/pkg_prime_broker.plh 1.3 2005/09/27 13:15:47BST apenney DEV  $
+as
+  pc_package                   constant varchar2(30):='vcr';
+  pc_schema                    constant varchar2(30):='pkg_prime_broker';
+
+  -- GUI Interface   
+  -- Gets resultset that fit search criteria.
+  -- If no search criteria are specified, returns the entire recordset.
+  -- Where necessary, we break long strings up with carriage returns.
+  function get_list(p_description      in prime_broker.description%type)
+  return utl.global.t_result_set;
+  
+  function get_count(p_description      in prime_broker.description%type) 
+  return integer;
+
+  function get_detail(p_prime_broker_id   in prime_broker.prime_broker_id%type)
+  return utl.global.t_result_set;
+
+  -- Dropdown list  
+  function get_dropdown_list(p_include_undefined IN CHAR DEFAULT 'Y')
+  return utl.global.t_result_set;
+  
+  function get_dropdown_count(p_include_undefined IN CHAR DEFAULT 'Y')
+  return pls_integer;  
+  
+  function get_description(p_prime_broker_id IN prime_broker.prime_broker_id%TYPE) RETURN VARCHAR2;
+  
+end pkg_prime_broker;
+/

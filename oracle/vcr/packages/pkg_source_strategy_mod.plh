@@ -1,0 +1,17 @@
+CREATE OR REPLACE PACKAGE
+------------------------------------------------------------------------
+--  $Header: vcr/packages/pkg_source_strategy_mod.plh 1.1.1.1 2005/05/10 15:26:53BST apenney DEV  $
+--------------------------------------------------------------------------
+-- Allows you to update strategy information
+ vcr.pkg_source_strategy_mod AS
+
+  -- Updates a source_strategy record for parameters
+  --         p_source_strategy_id - PK of source_strategy
+  --         p_me_strategy_id     - id of strategy reference in manager estimate source
+  --         p_change_reason      - reason for update
+
+  PROCEDURE update_detail(p_source_strategy_id IN source_strategy.source_strategy_id%TYPE,
+                          p_change_reason      IN source_strategy.change_reason%TYPE,
+                          p_me_strategy_id     IN source_strategy.me_strategy_id%TYPE DEFAULT NULL);
+END pkg_source_strategy_mod;
+/

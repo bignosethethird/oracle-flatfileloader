@@ -1,0 +1,43 @@
+CREATE OR REPLACE PACKAGE vcr.pkg_dim_creater AS
+  ------------------------------------------------------------------------
+  --  $Header: vcr/packages/pkg_dim_creater.plh 1.5.1.2 2005/07/21 14:21:05BST apenney DEV  $
+  --------------------------------------------------------------------------
+  --  A package to maintain distinct lists of dimensions for loaded source data 
+  -- e.g. a distinct list of funds for which positions have been loaded 
+  ------------------------------------------------------------------------
+  
+  -- this procedure creates the dimensions specified for the target table(s) of
+  -- the data loaded for the parameter values
+  PROCEDURE create_dims(p_source_name IN source.source_name%TYPE,
+                        p_basis       IN source_basis.basis%TYPE,
+                        p_as_of_date  IN DATE);
+
+  -- this procedure adds any new funds that there are positions for in a specific run
+  -- it formats and returns a list of the new funds added
+  FUNCTION create_funds(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+
+  -- this procedure adds any new strategies that there are positions for in a specific run
+  -- it formats and returns a list of the new strategies added
+  FUNCTION create_strategies(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+  
+  -- this procedure adds any new instrument types that there are positions for in a specific run
+  -- it formats and returns a list of the new instrument types added
+  FUNCTION create_instrument_types(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+  
+  -- this procedure adds any new brokers that there are positions for in a specific run
+  -- it formats and returns a list of the new brokers added
+  FUNCTION create_brokers(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+    
+  -- this procedure adds any new currencies that there are positions for in a specific run
+  -- it formats and returns a list of the new currencies added
+  FUNCTION create_currencies(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+  
+  -- this procedure adds any new countries that there are positions for in a specific run
+  -- it formats and returns a list of the new countries added
+  FUNCTION create_countries(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+  
+  -- this procedure adds any new markets that there are positions for in a specific run
+  -- it formats and returns a list of the new markets added
+  FUNCTION create_markets(p_load_run_id IN source_load_run.load_run_id%TYPE) RETURN VARCHAR2;
+END pkg_dim_creater;
+/
